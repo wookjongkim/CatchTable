@@ -1,5 +1,6 @@
 package com.project.catchtable.domain.model;
 
+import com.project.catchtable.domain.dto.SignUpDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -34,4 +35,13 @@ public class Customer extends BaseTimeEntity{
     // 고객 한명에 예약 여러개 가능
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Reservation> reservationList;
+
+    public static Customer from(SignUpDto signUpDto){
+            return Customer.builder()
+                    .name(signUpDto.getName())
+                    .email(signUpDto.getEmail())
+                    .password(signUpDto.getPassword())
+                    .phoneNumber(signUpDto.getPhoneNumber())
+                    .build();
+    }
 }
