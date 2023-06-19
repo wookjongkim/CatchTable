@@ -1,10 +1,17 @@
 package com.project.catchtable.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.catchtable.domain.dto.SignUpDto;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -12,16 +19,22 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Customer extends BaseTimeEntity{
+public class Customer extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "customer_id")
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String password;
+
     private String phoneNumber; // phone_number로 저장됨
 
     // 유저 한명당 리뷰를 여러개 작성할 수 있고, Reservation 또한 여러개 할 수 있음

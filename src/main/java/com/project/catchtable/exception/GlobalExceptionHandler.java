@@ -10,9 +10,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<ErrorResponse> handleBusinessException(final BusinessException businessException){
+
         final ErrorCode errorCode = businessException.getErrorCode();
         final ErrorResponse errorResponse = ErrorResponse.of(errorCode);
+
         return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(errorCode.getStatus()));
     }
-
 }
