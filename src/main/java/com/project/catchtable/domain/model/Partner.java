@@ -28,6 +28,7 @@ public class Partner extends BaseTimeEntity {
     // 스토어 정보가 실제로 사용될때, (ex:partner.getStoreList()) 로딩한다는 것을 의미
     // Eager을 사용하면 Partner를 조회할때 Store 까지 항상 같이 로딩 됨
 
+    // 파트너 한명 당 여러 상점을 가지게됨
     @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Store> storeList;
 
