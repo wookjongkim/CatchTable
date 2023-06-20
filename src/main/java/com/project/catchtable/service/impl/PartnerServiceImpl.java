@@ -2,8 +2,10 @@ package com.project.catchtable.service.impl;
 
 import com.project.catchtable.domain.dto.AddStoreDto;
 import com.project.catchtable.domain.dto.LoginDto;
+import com.project.catchtable.domain.dto.ReservationListResponseDto;
 import com.project.catchtable.domain.dto.SignUpDto;
 import com.project.catchtable.domain.model.Partner;
+import com.project.catchtable.domain.model.Reservation;
 import com.project.catchtable.domain.model.Store;
 import com.project.catchtable.exception.BusinessException;
 import com.project.catchtable.exception.ErrorCode;
@@ -14,6 +16,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -71,5 +76,41 @@ public class PartnerServiceImpl implements PartnerService {
         partnerRepository.save(partner);
 
         return partner.getName();
+    }
+
+    @Override
+    public List<ReservationListResponseDto> getReservationList(String email) {
+        // 이메일을 바탕으로 해당하는 파트너 찾기
+        Partner partner = partnerRepository.findByEmail(email).get();
+
+        // 파트너가 관리하는 모든 상점을 조회
+        List<Store> stores = partner.getStoreList();
+
+        if(stores.size() == 0){
+            throw new BusinessException(ErrorCode.STORE_NOT_REGISTERD);
+        }
+        List<ReservationListResponseDto> result = getReservationsByStores(stores);
+
+        // Time 기준으로 오름차순 정렬
+        result.sort(Comparator.comparing(ReservationListResponseDto::getTime));
+        return result;
+    }
+
+    private List<ReservationListResponseDto> getReservationsByStores(List<Store> stores) {
+        List<ReservationListResponseDto> result = new ArrayList<>();
+
+        for(Store store : stores){
+            List<Reservation> reservationList = store.getReservationList();
+            for(Reservation reservation : reservationList){
+                ReservationListResponseDto dto = new ReservationListResponseDto(
+                        store.getName(),
+                        reservation.getPhoneNumber(),
+                        reservation.isValid(),
+                        reservation.getTime()
+                );
+                result.add(dto);
+            }
+        }
+        return result;
     }
 }

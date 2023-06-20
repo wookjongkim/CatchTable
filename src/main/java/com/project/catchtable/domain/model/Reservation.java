@@ -23,7 +23,7 @@ public class Reservation extends BaseTimeEntity{
     private LocalDateTime time;
 
     private String phoneNumber; // 파트너가 예약 관련 전화시 이 번호로 전화
-    private boolean isValid; // 10분 전에 도착하여 방문 확인 하지 않을 시 isValid가 False로
+    private boolean isValid; // 아직 방문하지 않은 경우 true, 방문해서 사용한 경우 false
 
     // 여러 예약에 상점 하나
     @ManyToOne
