@@ -1,5 +1,6 @@
 package com.project.catchtable.domain.model;
 
+import com.project.catchtable.domain.dto.AddStoreDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,7 +22,7 @@ public class Store extends BaseTimeEntity {
     private String name;
     private String location;
     private String description;
-    private double Distance;
+    private double distance;
 
     // 파트너 한명당 여러 가계 가질수 있음
     @ManyToOne
@@ -35,4 +36,13 @@ public class Store extends BaseTimeEntity {
     // 가계 한개에 예약 여러개
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Reservation> reservationList;
+
+    public static Store from(AddStoreDto addStoreDto) {
+        return Store.builder()
+                .name(addStoreDto.getName())
+                .location(addStoreDto.getLocation())
+                .description(addStoreDto.getDescription())
+                .distance(addStoreDto.getDistanceKm())
+                .build();
+    }
 }

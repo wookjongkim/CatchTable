@@ -8,7 +8,6 @@ import com.project.catchtable.exception.ErrorCode;
 import com.project.catchtable.repository.CustomerRepository;
 import com.project.catchtable.service.CustomerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
         Optional<Customer> optionalCustomer = customerRepository.findByEmail(loginDto.getEmail());
 
         if(optionalCustomer.isEmpty()){
-            throw new BusinessException(ErrorCode.CUSTOMER_ID_INVALID);
+            throw new BusinessException(ErrorCode.CUSTOMER_EMAIL_INVALID);
         }
 
         Customer customer = optionalCustomer.get();
