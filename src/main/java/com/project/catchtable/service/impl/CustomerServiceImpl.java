@@ -1,15 +1,13 @@
 package com.project.catchtable.service.impl;
 
-import com.project.catchtable.domain.dto.LoginDto;
-import com.project.catchtable.domain.dto.MakeReserveDto;
-import com.project.catchtable.domain.dto.SignUpDto;
-import com.project.catchtable.domain.dto.StoreListResponseDto;
+import com.project.catchtable.domain.dto.*;
 import com.project.catchtable.domain.model.Customer;
 import com.project.catchtable.domain.model.Reservation;
 import com.project.catchtable.domain.model.Store;
 import com.project.catchtable.exception.BusinessException;
 import com.project.catchtable.exception.ErrorCode;
 import com.project.catchtable.repository.CustomerRepository;
+import com.project.catchtable.repository.ReservationRepository;
 import com.project.catchtable.repository.StoreRepository;
 import com.project.catchtable.service.CustomerService;
 import com.project.catchtable.type.StoreListType;
@@ -17,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,6 +26,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
     private final StoreRepository storeRepository;
+
+    private final ReservationRepository reservationRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -60,7 +61,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public String reverseStore(MakeReserveDto makeReserveDto) {
+    public String reserveStore(MakeReserveDto makeReserveDto) {
         Optional<Store> optStore = storeRepository.findByName(makeReserveDto.getStoreName());
         if(optStore.isEmpty()){
             throw new BusinessException(ErrorCode.STORE_NAME_NOT_FOUND);
@@ -123,5 +124,37 @@ public class CustomerServiceImpl implements CustomerService {
 
         return storeList.stream().map(e -> StoreListResponseDto.from(e))
                         .collect(Collectors.toList());
+    }
+
+    @Override
+    public String visitComplete(VisitStoreDto visitStoreDto) {
+        List<Reservation> reservationList = reservationRepository.findAllByPhoneNumber(visitStoreDto.getPhoneNumber());
+        Optional<Reservation> optionalReservation = reservationList.stream()
+                .filter(r -> r.getStore().getName().equals(visitStoreDto.getStoreName()) && r.isValid())
+                .findFirst();
+
+        if(optionalReservation.isPresent()){
+            Reservation reservation = optionalReservation.get();
+            reservation.setValid(false);
+            reservationRepository.save(reservation);
+
+            LocalDateTime reservationTime = reservation.getTime();
+            LocalDateTime visitTime = visitStoreDto.getVisitTime();
+            System.out.println(visitTime);
+            System.out.println(reservationTime);
+
+            LocalDateTime allowedArrivalTime = reservation.getTime().minusMinutes(10);
+            checkArrivalTime(allowedArrivalTime, visitStoreDto.getVisitTime());
+        }else{
+            throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND);
+        }
+
+        return "예약 정보 확인이 완료되었습니다. 즐거운 하루 되세요! :)";
+    }
+
+    private void checkArrivalTime(LocalDateTime allowedArrivalTime, LocalDateTime visitTime) {
+        if(visitTime.isAfter(allowedArrivalTime)){
+            throw new BusinessException(ErrorCode.ARRIVE_TO_LATE);
+        }
     }
 }

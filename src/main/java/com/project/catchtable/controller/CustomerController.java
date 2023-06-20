@@ -1,10 +1,9 @@
 package com.project.catchtable.controller;
 
-import com.project.catchtable.domain.dto.AddStoreDto;
 import com.project.catchtable.domain.dto.MakeReserveDto;
 import com.project.catchtable.domain.dto.StoreListResponseDto;
+import com.project.catchtable.domain.dto.VisitStoreDto;
 import com.project.catchtable.service.CustomerService;
-import com.project.catchtable.service.PartnerService;
 import com.project.catchtable.util.ValidUtil;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,7 @@ public class CustomerController {
             ValidUtil.extractErrorMessages(bindingResult);
         }
 
-        return ResponseEntity.ok(customerService.reverseStore(makeReserveDto));
+        return ResponseEntity.ok(customerService.reserveStore(makeReserveDto));
     }
 
     @GetMapping("/list/store/{listType}")
@@ -36,5 +35,14 @@ public class CustomerController {
             @ApiParam(value = "상점 리스트 정렬 유형: '이름순' : A, '거리순' : D, '평점순' : R", required = true)
             @PathVariable String listType){
         return ResponseEntity.ok(customerService.getStoreList(listType));
+    }
+
+    @PutMapping("/reservation/visit")
+    public ResponseEntity<String> customerVisit(@Valid VisitStoreDto visitStoreDto, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            ValidUtil.extractErrorMessages(bindingResult);
+        }
+
+        return ResponseEntity.ok(customerService.visitComplete(visitStoreDto));
     }
 }
