@@ -3,6 +3,7 @@ package com.project.catchtable.service.impl;
 import com.project.catchtable.domain.dto.LoginDto;
 import com.project.catchtable.domain.dto.MakeReserveDto;
 import com.project.catchtable.domain.dto.SignUpDto;
+import com.project.catchtable.domain.dto.StoreListResponseDto;
 import com.project.catchtable.domain.model.Customer;
 import com.project.catchtable.domain.model.Reservation;
 import com.project.catchtable.domain.model.Store;
@@ -11,11 +12,14 @@ import com.project.catchtable.exception.ErrorCode;
 import com.project.catchtable.repository.CustomerRepository;
 import com.project.catchtable.repository.StoreRepository;
 import com.project.catchtable.service.CustomerService;
+import com.project.catchtable.type.StoreListType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -86,5 +90,38 @@ public class CustomerServiceImpl implements CustomerService {
         customer.getReservationList().add(reservation);
 
         customerRepository.save(customer);
+    }
+
+    @Override
+    public List<StoreListResponseDto> getStoreList(String listType) {
+        List<StoreListResponseDto> storeResponseList;
+
+        if(listType.equals(StoreListType.ALPHABET.getType())){
+            storeResponseList = findAllStoresAlphabetically();
+        }else if(listType.equals(StoreListType.DISTANCE.getType())) {
+            storeResponseList = findAllStoresByDistance();
+        }else{
+            // 평점 순서대로
+            storeResponseList = findAllStoresByRating();
+        }
+        return storeResponseList;
+    }
+
+    private List<StoreListResponseDto> findAllStoresAlphabetically(){
+        return storeToResponseDto(storeRepository.findAllByOrderByNameAsc());
+    }
+
+    private List<StoreListResponseDto> findAllStoresByDistance(){
+        return storeToResponseDto(storeRepository.findAllByOrderByDistanceAsc());
+    }
+
+    private List<StoreListResponseDto> findAllStoresByRating(){
+        return null;
+    }
+
+    private List<StoreListResponseDto> storeToResponseDto(List<Store> storeList){
+
+        return storeList.stream().map(e -> StoreListResponseDto.from(e))
+                        .collect(Collectors.toList());
     }
 }
