@@ -1,6 +1,7 @@
 package com.project.catchtable.controller;
 
 import com.project.catchtable.domain.dto.AddStoreDto;
+import com.project.catchtable.domain.dto.MakeReserveDto;
 import com.project.catchtable.service.CustomerService;
 import com.project.catchtable.service.PartnerService;
 import com.project.catchtable.util.ValidUtil;
@@ -20,5 +21,12 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    @PostMapping("/reservation/store")
+    public ResponseEntity<String> makeStoreReserve(@Valid MakeReserveDto makeReserveDto, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            ValidUtil.extractErrorMessages(bindingResult);
+        }
 
+        return ResponseEntity.ok(customerService.reverseStore(makeReserveDto));
+    }
 }

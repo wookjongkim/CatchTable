@@ -1,11 +1,15 @@
 package com.project.catchtable.service.impl;
 
 import com.project.catchtable.domain.dto.LoginDto;
+import com.project.catchtable.domain.dto.MakeReserveDto;
 import com.project.catchtable.domain.dto.SignUpDto;
 import com.project.catchtable.domain.model.Customer;
+import com.project.catchtable.domain.model.Reservation;
+import com.project.catchtable.domain.model.Store;
 import com.project.catchtable.exception.BusinessException;
 import com.project.catchtable.exception.ErrorCode;
 import com.project.catchtable.repository.CustomerRepository;
+import com.project.catchtable.repository.StoreRepository;
 import com.project.catchtable.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +22,7 @@ import java.util.Optional;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final StoreRepository storeRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -48,5 +53,38 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         return customer.getName();
+    }
+
+    @Override
+    public String reverseStore(MakeReserveDto makeReserveDto) {
+        Optional<Store> optStore = storeRepository.findByName(makeReserveDto.getStoreName());
+        if(optStore.isEmpty()){
+            throw new BusinessException(ErrorCode.STORE_NAME_NOT_FOUND);
+        }
+        Store store = optStore.get();
+
+        Optional<Customer> optCustomer = customerRepository.findByPhoneNumber(makeReserveDto.getPhoneNumber());
+        if(optCustomer.isEmpty()){
+            throw new BusinessException(ErrorCode.CUSTOMER_BY_PHONE_NUMBER_NOT_FOUND);
+        }
+
+        Customer customer = optCustomer.get();
+
+        createReservation(makeReserveDto,store,customer);
+
+        return "해당 예약이 접수되었습니다 :)";
+    }
+
+    private void createReservation(MakeReserveDto makeReserveDto, Store store, Customer customer) {
+        Reservation reservation = Reservation.builder()
+                .customer(customer)
+                .store(store)
+                .time(makeReserveDto.getReservationTime())
+                .phoneNumber(customer.getPhoneNumber())
+                .isValid(true).build();
+
+        customer.getReservationList().add(reservation);
+
+        customerRepository.save(customer);
     }
 }

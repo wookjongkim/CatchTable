@@ -34,7 +34,9 @@ public class Store extends BaseTimeEntity {
     private List<Review> reviewList;
 
     // 가계 한개에 예약 여러개
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // 원래 이 메서드에도 cascade를 all로 하였으나 예약 저장시 customer와 store 둘다 예약 정보를 저장하는 책임을 가지고 있었음
+    // 그래서 우선 이부분에 casecadeAll 옵션을 제거하였음
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
     private List<Reservation> reservationList;
 
     public static Store from(AddStoreDto addStoreDto) {
