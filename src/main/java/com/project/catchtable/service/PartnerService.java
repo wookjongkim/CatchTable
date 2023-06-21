@@ -13,6 +13,6 @@ public interface PartnerService {
     String signUp(SignUpDto signUpDto);
     String login(LoginDto loginDto);
     String registerShop(AddStoreDto addStoreDto);
-
     List<ReservationListResponseDto> getReservationList(String email);
+    String refuseReservation(Long reservationId);
 }

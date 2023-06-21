@@ -10,6 +10,7 @@ import com.project.catchtable.domain.model.Store;
 import com.project.catchtable.exception.BusinessException;
 import com.project.catchtable.exception.ErrorCode;
 import com.project.catchtable.repository.PartnerRepository;
+import com.project.catchtable.repository.ReservationRepository;
 import com.project.catchtable.service.PartnerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,6 +27,7 @@ import java.util.Optional;
 public class PartnerServiceImpl implements PartnerService {
 
     private final PartnerRepository partnerRepository;
+    private final ReservationRepository reservationRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -112,5 +114,13 @@ public class PartnerServiceImpl implements PartnerService {
             }
         }
         return result;
+    }
+
+    @Override
+    public String refuseReservation(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId).get();
+        reservation.setRefused(true);
+        reservationRepository.save(reservation);
+        return "예약이 거절되었습니다.";
     }
 }

@@ -92,7 +92,9 @@ public class CustomerServiceImpl implements CustomerService {
                 .store(store)
                 .time(makeReserveDto.getReservationTime())
                 .phoneNumber(customer.getPhoneNumber())
-                .isValid(true).build();
+                .isValid(true)
+                .isRefused(false)
+                .build();
 
         customer.getReservationList().add(reservation);
 
@@ -152,16 +154,23 @@ public class CustomerServiceImpl implements CustomerService {
                 .filter(r -> r.getStore().getName().equals(visitStoreDto.getStoreName()) && r.isValid())
                 .findFirst();
 
-        if(optionalReservation.isPresent()){
-            Reservation reservation = optionalReservation.get();
-            reservation.setValid(false);
-            reservationRepository.save(reservation);
+        optionalReservation.ifPresentOrElse(
+                reservation -> {
+                    if(reservation.isRefused()){
+                        // 파트너에 의해 거절당한 예약의 경우
+                        throw new BusinessException(ErrorCode.RESERVATION_IS_REFUSED);
+                    }
 
-            LocalDateTime allowedArrivalTime = reservation.getTime().minusMinutes(10);
-            checkArrivalTime(allowedArrivalTime, visitStoreDto.getVisitTime());
-        }else{
-            throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND);
-        }
+                    reservation.setValid(false);
+                    reservationRepository.save(reservation);
+
+                    LocalDateTime allowedArrivalTime = reservation.getTime().minusMinutes(10);
+                    checkArrivalTime(allowedArrivalTime, visitStoreDto.getVisitTime());
+                },
+                () -> {
+                    throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND);
+                }
+        );
         return "예약 정보 확인이 완료되었습니다. 즐거운 하루 되세요! :)";
     }
 

@@ -10,10 +10,7 @@ import com.project.catchtable.util.ValidUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -40,8 +37,13 @@ public class PartnerController {
         return ResponseEntity.ok(sb.toString());
     }
 
-    @GetMapping("/list/reservation")
+    @GetMapping("/reservation/list")
     public ResponseEntity<List<ReservationListResponseDto>> getReservations(String email){
         return ResponseEntity.ok(partnerService.getReservationList(email));
+    }
+
+    @PutMapping("/reservation/refuse")
+    public ResponseEntity<String> refuseReservation(Long reservationId){
+        return ResponseEntity.ok(partnerService.refuseReservation(reservationId));
     }
 }
