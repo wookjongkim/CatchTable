@@ -18,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -106,10 +108,23 @@ public class CustomerServiceImpl implements CustomerService {
         }else if(listType.equals(StoreListType.DISTANCE.getType())) {
             storeResponseList = findAllStoresByDistance();
         }else{
-            // 평점 순서대로
             storeResponseList = findAllStoresByRating();
         }
+        storeResponseList.forEach(dto -> dto.setRatingAverage(calculateAverageRating(dto.getName())));
+
+        // 평점 순서일 경우 평점 기반 정렬
+        if(listType.equals(StoreListType.RATING.getType())){
+            Collections.sort(storeResponseList, Comparator.comparing(StoreListResponseDto::getRatingAverage).reversed());
+        }
         return storeResponseList;
+    }
+
+    private double calculateAverageRating(String storeName){
+        Store store = storeRepository.findByName(storeName).get();
+
+        return store.getReviewList().stream()
+                .mapToDouble(Review :: getRating)
+                .average().orElse(0.0);
     }
 
     private List<StoreListResponseDto> findAllStoresAlphabetically(){
@@ -121,7 +136,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private List<StoreListResponseDto> findAllStoresByRating(){
-        return null;
+        return storeToResponseDto(storeRepository.findAll());
     }
 
     private List<StoreListResponseDto> storeToResponseDto(List<Store> storeList){

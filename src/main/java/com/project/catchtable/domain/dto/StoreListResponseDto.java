@@ -1,7 +1,10 @@
 package com.project.catchtable.domain.dto;
 
+import com.project.catchtable.domain.model.Review;
 import com.project.catchtable.domain.model.Store;
 import lombok.*;
+
+import java.util.Collections;
 
 @Getter
 @Setter
@@ -14,8 +17,10 @@ public class StoreListResponseDto {
     private String location;
     private String description;
     private double distance;
+    private double ratingAverage;
 
     public static StoreListResponseDto from(Store store){
+
         return StoreListResponseDto.builder()
                 .name(store.getName())
                 .distance(store.getDistance())

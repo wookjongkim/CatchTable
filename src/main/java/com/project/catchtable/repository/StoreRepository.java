@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
     Optional<Store> findByName(String name);
+    List<Store> findAll();
     List<Store> findAllByOrderByNameAsc();
     List<Store> findAllByOrderByDistanceAsc();
 }
