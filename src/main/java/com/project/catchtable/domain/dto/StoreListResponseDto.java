@@ -11,6 +11,7 @@ import java.util.Collections;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Customer에게 상점 리스트들을 내려주기 위한 클래스
 public class StoreListResponseDto {
 
     private String name;

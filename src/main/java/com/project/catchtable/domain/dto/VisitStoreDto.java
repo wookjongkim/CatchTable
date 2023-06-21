@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// 예약을 한 후, 해당 상점에 방문했다는 것을 알리기 위해 Customer가 주는 입력값들을 포함한 클래스
 public class VisitStoreDto {
 
     @Pattern(regexp = "^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$",

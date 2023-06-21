@@ -12,6 +12,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// 회원가입을 위해 입력받을 값들을 포함한 클래스
 public class SignUpDto {
 
     @Email(message = "이메일 형식이 잘못되었습니다.")

@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// 로그인을 위해 입력받을 값들을 포함한 클래스
 public class LoginDto {
 
     @NotBlank(message = "이메일을 입력해주세요!")

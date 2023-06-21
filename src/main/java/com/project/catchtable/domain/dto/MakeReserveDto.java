@@ -18,6 +18,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Customer가 예약을 위해 입력받을 값들을 포함한 클래스
 public class MakeReserveDto {
 
     @NotBlank(message = "상점 이름을 입력해주세요.")

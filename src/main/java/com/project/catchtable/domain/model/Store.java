@@ -21,7 +21,11 @@ public class Store extends BaseTimeEntity {
 
     private String name;
     private String location;
+
+    // partner가 본인의 상점에 대해 남기는 설명
     private String description;
+
+    // 해당 상점까지의 거리
     private double distance;
 
     // 파트너 한명당 여러 가계 가질수 있음

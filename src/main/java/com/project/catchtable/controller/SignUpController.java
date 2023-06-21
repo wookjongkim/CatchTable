@@ -21,7 +21,7 @@ public class SignUpController {
     private final PartnerService partnerService;
     private final CustomerService customerService;
 
-
+    // 파트너 회원 가입
     @PostMapping("/partner")
     public ResponseEntity<String> signUpPartner(@Valid SignUpDto signUpDto, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
@@ -35,6 +35,7 @@ public class SignUpController {
         return ResponseEntity.ok(sb.toString());
     }
 
+    // Customer 회원 가입
     @PostMapping("/customer")
     public ResponseEntity<String> signUpCustomer(@Valid SignUpDto signUpDto, BindingResult bindingResult){
 

@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// 상점을 등록하기 위해 입력받을 값들을 포함한 클래스
 public class AddStoreDto {
 
     @NotBlank(message = "상점 이름을 입력해주세요!")

@@ -17,7 +17,10 @@ public class Review extends BaseTimeEntity{
     @Column(name = "review_id")
     private Long id;
 
+    // 사용자가 리뷰에 남김 평점
     private int rating;
+
+    // 사용자가 리뷰에 남긴 내용
     private String content;
 
     // 사람 한명 당 리뷰 여러개 가능

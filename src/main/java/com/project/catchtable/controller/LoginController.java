@@ -21,6 +21,7 @@ public class LoginController {
     private final CustomerService customerService;
     private final PartnerService partnerService;
 
+    // 파트너 로그인 기능
     @PostMapping("/partner")
     public ResponseEntity<String> loginPartner(@Valid LoginDto loginDto, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
@@ -35,6 +36,7 @@ public class LoginController {
         return ResponseEntity.ok(sb.toString());
     }
 
+    // Customer 로그인 기능
     @PostMapping("/customer")
     public ResponseEntity<String> loginCustomer(@Valid LoginDto loginDto, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
