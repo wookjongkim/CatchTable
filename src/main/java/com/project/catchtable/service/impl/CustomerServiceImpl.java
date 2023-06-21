@@ -3,11 +3,13 @@ package com.project.catchtable.service.impl;
 import com.project.catchtable.domain.dto.*;
 import com.project.catchtable.domain.model.Customer;
 import com.project.catchtable.domain.model.Reservation;
+import com.project.catchtable.domain.model.Review;
 import com.project.catchtable.domain.model.Store;
 import com.project.catchtable.exception.BusinessException;
 import com.project.catchtable.exception.ErrorCode;
 import com.project.catchtable.repository.CustomerRepository;
 import com.project.catchtable.repository.ReservationRepository;
+import com.project.catchtable.repository.ReviewRepository;
 import com.project.catchtable.repository.StoreRepository;
 import com.project.catchtable.service.CustomerService;
 import com.project.catchtable.type.StoreListType;
@@ -28,6 +30,8 @@ public class CustomerServiceImpl implements CustomerService {
     private final StoreRepository storeRepository;
 
     private final ReservationRepository reservationRepository;
+
+    private final ReviewRepository reviewRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -138,17 +142,11 @@ public class CustomerServiceImpl implements CustomerService {
             reservation.setValid(false);
             reservationRepository.save(reservation);
 
-            LocalDateTime reservationTime = reservation.getTime();
-            LocalDateTime visitTime = visitStoreDto.getVisitTime();
-            System.out.println(visitTime);
-            System.out.println(reservationTime);
-
             LocalDateTime allowedArrivalTime = reservation.getTime().minusMinutes(10);
             checkArrivalTime(allowedArrivalTime, visitStoreDto.getVisitTime());
         }else{
             throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND);
         }
-
         return "예약 정보 확인이 완료되었습니다. 즐거운 하루 되세요! :)";
     }
 
@@ -156,5 +154,38 @@ public class CustomerServiceImpl implements CustomerService {
         if(visitTime.isAfter(allowedArrivalTime)){
             throw new BusinessException(ErrorCode.ARRIVE_TO_LATE);
         }
+    }
+
+    @Override
+    public String registerReview(Long reservationId, ReviewDto reviewDto) {
+        Reservation reservation = reservationRepository.findById(reservationId).get();
+
+        if(reservation.isValid()){
+            // 사용되지 않은 예약의 경우
+            throw new BusinessException(ErrorCode.RESERVATION_NOT_USED);
+        }
+        Customer customer = reservation.getCustomer();
+        Store store = reservation.getStore();
+
+        Review review = Review.builder()
+                .customer(customer)
+                .store(store)
+                .reservation(reservation)
+                .rating(reviewDto.getRating())
+                .content(reviewDto.getContent())
+                .build();
+
+        reviewRepository.save(review);
+
+        return makeReviewSuccessMessage(customer.getName(), store.getName());
+    }
+
+    private String makeReviewSuccessMessage(String customerName, String storeName) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(customerName);
+        sb.append("님 "); sb.append(storeName);
+        sb.append("가계에 대한 리뷰를 남겨주셔서 감사합니다 :)");
+
+        return sb.toString();
     }
 }

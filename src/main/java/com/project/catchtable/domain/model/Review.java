@@ -25,10 +25,10 @@ public class Review extends BaseTimeEntity{
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    // 예약 한개당 리뷰는 한개만 작성 가능
+    // 예약 한개당 리뷰는 한개만 작성 가능, Review가 reservation 저장할 책임을 가짐
     @OneToOne
-    @JoinColumn(name = "review_id")
-    private Review review;
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
 
     // 상점 한개당 리뷰는 여러개 있을 것
     @ManyToOne

@@ -16,7 +16,8 @@ public enum ErrorCode {
     CUSTOMER_BY_PHONE_NUMBER_NOT_FOUND(400, "e0008", "해당 전화번호에 해당하는 유저가 존재하지 않습니다."),
     STORE_NOT_REGISTERD(400, "e0009", "해당 아이디에 해당하는 상점이 등록되어있지 않습니다."),
     RESERVATION_NOT_FOUND(400, "e0010", "해당 예약 정보는 존재하지 않습니다.(예약을 하지 않았거나, 이미 사용한 예약의 경우"),
-    ARRIVE_TO_LATE(400, "e0011", "예약 시간 10분전에 도착하지 않아 해당 예약 정보는 사용할 수 없습니다.");
+    ARRIVE_TO_LATE(400, "e0011", "예약 시간 10분전에 도착하지 않아 해당 예약 정보는 사용할 수 없습니다."),
+    RESERVATION_NOT_USED(400, "e0012", "예약을 사용한 후에 리뷰를 작성해야합니다.");
 
     private final int status;
     private final String code;

@@ -1,6 +1,7 @@
 package com.project.catchtable.controller;
 
 import com.project.catchtable.domain.dto.MakeReserveDto;
+import com.project.catchtable.domain.dto.ReviewDto;
 import com.project.catchtable.domain.dto.StoreListResponseDto;
 import com.project.catchtable.domain.dto.VisitStoreDto;
 import com.project.catchtable.service.CustomerService;
@@ -45,4 +46,13 @@ public class CustomerController {
 
         return ResponseEntity.ok(customerService.visitComplete(visitStoreDto));
     }
+
+    @PostMapping("/reservation/{reservationId}/review")
+    public ResponseEntity<String> makeReview(@PathVariable Long reservationId, ReviewDto reviewDto, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            ValidUtil.extractErrorMessages(bindingResult);
+        }
+        return ResponseEntity.ok(customerService.registerReview(reservationId, reviewDto));
+    }
+
 }
